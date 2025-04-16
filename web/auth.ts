@@ -8,15 +8,23 @@ const providers: Provider[] = [Credentials({
     email: { label: 'Email Address', type: 'email' },
     password: { label: 'Password', type: 'password' },
   },
-  authorize(c) {
-    if (c.password !== 'password') {
-      return null;
-    }
-    return {
-      id: 'test',
-      name: 'Test User',
-      email: String(c.email),
-    };
+  async authorize(c) {
+    console.log(`${process.env.EXPRESS_API_URL}/users/login`)
+    const user = await fetch(`${process.env.EXPRESS_API_URL}/users/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(c),
+    })
+      .then((res) => res.json())
+      .then((data) => data.data)
+      .catch((error) => {
+        console.error("Error getting user:", error)
+        return null
+      })
+
+    return user;
   },
 }),
 ];
@@ -27,16 +35,16 @@ const providers: Provider[] = [Credentials({
 export const providerMap = providers.map((provider) => {
   if (typeof provider === 'function') {
     const providerData = provider();
-      return { id: providerData.id, name: providerData.name };
+    return { id: providerData.id, name: providerData.name };
   }
   return { id: provider.id, name: provider.name };
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
-  
-  
-      
+
+
+
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: '/auth/signin',
@@ -54,4 +62,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
-  

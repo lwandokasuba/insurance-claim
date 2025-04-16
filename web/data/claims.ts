@@ -1,5 +1,5 @@
 'use client';
-import { Claim } from '@/types';
+import { Claim, ClaimStatus } from '@/types';
 import { DataSource, DataSourceCache } from '@toolpad/core/Crud';
 import { z } from 'zod';
 
@@ -9,13 +9,15 @@ const API_URL = '/api/claims';
 export const claimsDataSource: DataSource<Claim> = {
   fields: [
     { field: 'id', headerName: 'ID' },
-    { field: 'claimNumber', headerName: 'Number', width: 140, hideable: true },
     { field: 'type', headerName: 'Type' },
+    { field: 'status', headerName: 'Status', type: 'singleSelect', editable: true, valueOptions: Object.values(ClaimStatus) },
     {
       field: 'incidentDate',
       headerName: 'Incident date',
       type: 'date',
-      valueGetter: (value: string) => value && new Date(value),
+      valueSetter: (value: string) => new Date(value),
+      editable: false,
+      valueGetter: (value: string) => new Date(value),
       width: 140,
     },
     {
@@ -26,10 +28,11 @@ export const claimsDataSource: DataSource<Claim> = {
       field: 'reportedDate',
       headerName: 'Reported date',
       type: 'date',
+      editable: false,
       valueGetter: (value: string) => value && new Date(value),
       width: 140,
     },
-    { field: 'description', headerName: 'Description' },
+    { field: 'description', headerName: 'Description', editable: true },
   ],
   getMany: async ({ paginationModel, filterModel, sortModel }) => {
     const queryParams = new URLSearchParams();
@@ -76,6 +79,7 @@ export const claimsDataSource: DataSource<Claim> = {
     return resJson;
   },
   updateOne: async (employeeId, data) => {
+    console.log('updateOne', employeeId, data);
     const res = await fetch(`${API_URL}/${employeeId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -98,14 +102,10 @@ export const claimsDataSource: DataSource<Claim> = {
     return resJson;
   },
   validate: z.object({
-    name: z.string({ required_error: 'Name is required' }).nonempty('Name is required'),
-    age: z.number({ required_error: 'Age is required' }).min(18, 'Age must be at least 18'),
-    joinDate: z
-      .string({ required_error: 'Join date is required' })
-      .nonempty('Join date is required'),
-    role: z.enum(['Market', 'Finance', 'Development'], {
-      errorMap: () => ({ message: 'Role must be "Market", "Finance" or "Development"' }),
-    }),
+    type: z.string().min(1, { message: 'Type is required' }),
+    description: z.string().min(1, { message: 'Description is required' }),
+    incidentDate: z.date().optional(),
+    incidentLocation: z.string().optional(),
   })['~standard'].validate,
 };
 

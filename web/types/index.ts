@@ -21,7 +21,6 @@ export interface User extends Common {
 
 export interface Claim extends Common, DataModel {
   id: number;
-  claimNumber: string;
   status: ClaimStatus;
   type: string;
   userId: number;
