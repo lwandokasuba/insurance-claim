@@ -95,6 +95,18 @@ app.get(services.users.routes.getAll, async (req, res) => {
   }
 })
 
+app.post(services.users.routes.login, async (req, res) => {
+  try {
+    const result: Result = { status: 'success' };
+    result.data = await services.users.login(req.body)
+    res.json(result)
+  } catch (error: any) {
+    const result: Result = { status: 'error' };
+    result.message = error?.message || 'Failed to get user';
+    res.status(400).json(result)
+  }
+})
+
 app.get(services.users.routes.get, async (req, res) => {
   try {
     const id = req.query.id || req.params.id

@@ -12,6 +12,7 @@ export class UserService extends BaseService {
       get: "/users/get/:id",
       update: "/users/update/:id",
       delete: "/users/delete/:id",
+      login: "/users/login",
     };
   }
 
@@ -36,6 +37,22 @@ export class UserService extends BaseService {
 
   getUsers: () => Promise<any> = async () => {
     return await this.prisma.user.findMany({
+      omit: {
+        password: true
+      }
+    });
+  }
+
+  login: (props: { email: string, password: string }) => Promise<any> = async (props) => {
+    if (!(props.email && props.password)) {
+      throw new Error("Missing required fields");
+    }
+
+    return await this.prisma.user.findUnique({
+      where: {
+        email: props.email,
+        password: props.password,
+      },
       omit: {
         password: true
       }
