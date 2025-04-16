@@ -2,50 +2,23 @@ import { PrismaClient, Prisma } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-const userData: Prisma.UserCreateInput[] = [
+const userData = [
   {
-    name: 'Alice',
-    email: 'alice@prisma.io',
-    posts: {
-      create: [
-        {
-          title: 'Join the Prisma Discord',
-          content: 'https://pris.ly/discord',
-          published: true,
-        },
-      ],
-    },
+    name: 'Lwando Kasuba',
+    email: 'lwandojapkas@gmail.com',
+    role: 'user',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    password: 'password',
   },
   {
-    name: 'Nilu',
-    email: 'nilu@prisma.io',
-    posts: {
-      create: [
-        {
-          title: 'Follow Prisma on Twitter',
-          content: 'https://www.twitter.com/prisma',
-          published: true,
-        },
-      ],
-    },
-  },
-  {
-    name: 'Mahmoud',
-    email: 'mahmoud@prisma.io',
-    posts: {
-      create: [
-        {
-          title: 'Ask a question about Prisma on GitHub',
-          content: 'https://www.github.com/prisma/prisma/discussions',
-          published: true,
-        },
-        {
-          title: 'Prisma on YouTube',
-          content: 'https://pris.ly/youtube',
-        },
-      ],
-    },
-  },
+    name: 'Admin Kasuba',
+    email: 'lwando.developer@gmail.com',
+    role: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    password: 'password',
+  }
 ]
 
 async function main() {

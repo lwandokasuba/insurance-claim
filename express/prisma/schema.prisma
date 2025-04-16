@@ -8,20 +8,40 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
-}
-
-model Post {
   id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  role      String   @default("user")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  viewCount Int      @default(0)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  password  String
+  claims    Claim[]
+
+  @@map("users")
+}
+
+model Claim {
+  id                 Int      @id @default(autoincrement())
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  status             ClaimStatus @default(PENDING)
+  type               String
+  userId             Int
+  user               User     @relation(fields: [userId], references: [id])
+  description        String
+  incidentDate       DateTime?
+  incidentLocation   String?
+  reportedDate       DateTime @default(now())
+
+  @@map("claims")
+}
+
+enum ClaimStatus {
+  PENDING
+  OPEN
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  CLOSED
+  PAID
 }
