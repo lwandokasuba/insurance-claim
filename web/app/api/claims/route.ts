@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getEmployeesStore, setEmployeesStore } from '../../../employeesStore';
-import type { Employee } from '../../../data/employees';
 import type { GridFilterModel, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import type { OmitId } from '@toolpad/core/Crud';
+import { getClaimsStore, setClaimsStore } from '@/store/claimsStore';
+import { Claim } from '@/types';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -16,9 +16,9 @@ export async function GET(req: NextRequest) {
     ? JSON.parse(searchParams.get('filter')!)
     : [];
 
-  const employeesStore = getEmployeesStore();
+  const claimsStore = await getClaimsStore();
 
-  let filteredEmployees = [...employeesStore];
+  let filteredClaims = [...claimsStore];
 
   // Apply filters (example only)
   if (filterModel?.items?.length) {
@@ -27,22 +27,22 @@ export async function GET(req: NextRequest) {
         return;
       }
 
-      filteredEmployees = filteredEmployees.filter((employee) => {
-        const employeeValue = employee[field];
+      filteredClaims = filteredClaims.filter((claim) => {
+        const claimValue = claim[field];
 
         switch (operator) {
           case 'contains':
-            return String(employeeValue).toLowerCase().includes(String(value).toLowerCase());
+            return String(claimValue).toLowerCase().includes(String(value).toLowerCase());
           case 'equals':
-            return employeeValue === value;
+            return claimValue === value;
           case 'startsWith':
-            return String(employeeValue).toLowerCase().startsWith(String(value).toLowerCase());
+            return String(claimValue).toLowerCase().startsWith(String(value).toLowerCase());
           case 'endsWith':
-            return String(employeeValue).toLowerCase().endsWith(String(value).toLowerCase());
+            return String(claimValue).toLowerCase().endsWith(String(value).toLowerCase());
           case '>':
-            return (employeeValue as number) > value;
+            return (claimValue as number) > value;
           case '<':
-            return (employeeValue as number) < value;
+            return (claimValue as number) < value;
           default:
             return true;
         }
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
 
   // Apply sorting
   if (sortModel?.length) {
-    filteredEmployees.sort((a, b) => {
+    filteredClaims.sort((a, b) => {
       for (const { field, sort } of sortModel) {
         if ((a[field] as number) < (b[field] as number)) {
           return sort === 'asc' ? -1 : 1;
@@ -68,25 +68,22 @@ export async function GET(req: NextRequest) {
   // Apply pagination
   const start = page * pageSize;
   const end = start + pageSize;
-  const paginatedEmployees = filteredEmployees.slice(start, end);
+  const paginatedClaims = filteredClaims.slice(start, end);
 
   return NextResponse.json({
-    items: paginatedEmployees,
-    itemCount: filteredEmployees.length,
+    items: paginatedClaims,
+    itemCount: filteredClaims.length,
   });
 }
 
 export async function POST(req: NextRequest) {
-  const body: Partial<OmitId<Employee>> = await req.json();
+  const body: Partial<OmitId<Claim>> = await req.json();
 
-  const employeesStore = getEmployeesStore();
-
-  const newEmployee = {
-    id: employeesStore.reduce((max, employee) => Math.max(max, employee.id), 0) + 1,
+  const newClaim = {
     ...body,
-  } as Employee;
+  } as Claim;
 
-  setEmployeesStore([...employeesStore, newEmployee]);
+  await setClaimsStore(newClaim);
 
-  return NextResponse.json(newEmployee, { status: 201 });
+  return NextResponse.json(newClaim, { status: 201 });
 }
