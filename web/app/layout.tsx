@@ -3,6 +3,7 @@ import { NextAppProvider } from '@toolpad/core/nextjs';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 import type { Navigation } from '@toolpad/core/AppProvider';
 import { SessionProvider, signIn, signOut } from 'next-auth/react';
@@ -10,7 +11,7 @@ import { auth } from '../auth';
 import theme from '../theme';
 
 export const metadeta = {
-  title: 'My Toolpad Core Next.js App',
+  title: 'Insurance Claim Processing',
   description: 'This is a sample app built with Toolpad Core and Next.js',
 };
 
@@ -25,15 +26,15 @@ const NAVIGATION: Navigation = [
     icon: <DashboardIcon />,
   },
   {
-    segment: 'employees',
-    title: 'Employees',
-    icon: <PersonIcon />,
-    pattern: 'employees{/:employeeId}*',
+    segment: 'claims',
+    title: 'Claims',
+    icon: <AssessmentIcon />,
+    pattern: 'claims{/:claimId}*',
   },
 ];
 
 const BRANDING = {
-  title: 'My Toolpad Core Next.js App',
+  title: 'Insurance Claims',
 };
 
 

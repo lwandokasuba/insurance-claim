@@ -1,38 +1,35 @@
 'use client';
-import { DataModel, DataSource, DataSourceCache } from '@toolpad/core/Crud';
+import { Claim } from '@/types';
+import { DataSource, DataSourceCache } from '@toolpad/core/Crud';
 import { z } from 'zod';
 
-type EmployeeRole = 'Market' | 'Finance' | 'Development';
 
-export interface Employee extends DataModel {
-  id: number;
-  name: string;
-  age: number;
-  joinDate: string;
-  role: EmployeeRole;
-}
+const API_URL = '/api/claims';
 
-const API_URL = '/api/employees';
-
-export const employeesDataSource: DataSource<Employee> = {
+export const claimsDataSource: DataSource<Claim> = {
   fields: [
     { field: 'id', headerName: 'ID' },
-    { field: 'name', headerName: 'Name', width: 140 },
-    { field: 'age', headerName: 'Age', type: 'number' },
+    { field: 'claimNumber', headerName: 'Number', width: 140, hideable: true },
+    { field: 'type', headerName: 'Type' },
     {
-      field: 'joinDate',
-      headerName: 'Join date',
+      field: 'incidentDate',
+      headerName: 'Incident date',
       type: 'date',
       valueGetter: (value: string) => value && new Date(value),
       width: 140,
     },
     {
-      field: 'role',
-      headerName: 'Department',
-      type: 'singleSelect',
-      valueOptions: ['Market', 'Finance', 'Development'],
-      width: 160,
+      field: 'incidentLocation',
+      headerName: 'Location',
     },
+    {
+      field: 'reportedDate',
+      headerName: 'Reported date',
+      type: 'date',
+      valueGetter: (value: string) => value && new Date(value),
+      width: 140,
+    },
+    { field: 'description', headerName: 'Description' },
   ],
   getMany: async ({ paginationModel, filterModel, sortModel }) => {
     const queryParams = new URLSearchParams();
@@ -112,4 +109,4 @@ export const employeesDataSource: DataSource<Employee> = {
   })['~standard'].validate,
 };
 
-export const employeesCache = new DataSourceCache();
+export const claimsCache = new DataSourceCache();
